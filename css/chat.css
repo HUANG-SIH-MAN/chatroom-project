@@ -225,7 +225,7 @@ body::-webkit-scrollbar {
 
 .chat-item {
 	width: 100%;
-	margin-bottom: 20px;
+	margin-bottom: 45px;
 	position: relative;
 }
 .item-left .message {
@@ -262,4 +262,20 @@ body::-webkit-scrollbar {
 .chat-item .message {
 	display: block;
 	padding: 10px;
+}
+
+.time-right {
+	position: absolute;
+	right: 0%;
+	bottom: -25%;
+	font-size: smaller;
+	color: #bebaba;
+}
+
+.time-left {
+	position: absolute;
+	left: 0%;
+	bottom: -25%;
+	font-size: smaller;
+	color: #bebaba;
 }

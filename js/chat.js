@@ -1,6 +1,7 @@
-const socket = io("http://localhost:3000/");
+//前端版面的JS
+const socket = io("http://localhost:3000/"); //填寫要連接後端是伺服器網址
 
-let user = ''
+let user = '' //當前使用者名稱
 
 // HTML畫面元件
 const loginName = document.querySelector('#loginName')
@@ -11,30 +12,54 @@ const chatCon = document.querySelector('.chat-con')
 const sendtxt = document.querySelector('#sendtxt')
 
 // socket事件監聽
-socket.on('loginSuccess', userName => {
-    user = userName  
+//登入成功
+socket.on('loginSuccess', data => {
+    user = data.loginUserName  
     loginWrap.innerHTML = ``
     loginWrap.classList.remove('login-wrap')
     chatWrap.classList.remove('hide')
-    alert(`${userName}成功登入`)
+    console.log(data)
+    data.messageData.forEach(i => {
+        if (user === i.user) {
+            chatCon.innerHTML +=  `
+                <div class="chat-item item-right clearfix">
+                    <span class="abs uname">${i.user}</span>
+                    <span class="message fr">${i.message}</span>
+                    <span class="time-right">${i.createdAt}</span>
+                </div>
+            `
+        } else {
+            chatCon.innerHTML +=  `
+                <div class="chat-item item-left clearfix rela">
+                    <span class="abs uname">${i.user}</span>
+                    <span class="fl message">${i.message}</span>
+                    <span class="time-left">${i.createdAt}</span>
+                </div>
+            `
+        }
+    });
+    alert(`${user}成功登入`)
 })
 
+//登入失敗
 socket.on('loginFail', message => {
     alert(message)
 })
 
+//取得有人加入
 socket.on('addUser', message => {
     chatTitle.innerHTML = `目前上線人數${message.userNumber}人`
     chatCon.innerHTML += `<div>${message.message}</div>`
 })
 
+//取得是否有人離開
 socket.on('leave', message => {
     chatTitle.innerHTML = `目前上線人數${message.userNumber}人`
     chatCon.innerHTML += `<div>${message.message}</div>`
 })
 
+//取得訊息
 socket.on('receiveMessage', data => {
-    console.log(data)
     if (user === data.user) {
         chatCon.innerHTML +=  `
             <div class="chat-item item-right clearfix">
@@ -77,6 +102,7 @@ document.addEventListener('click', event => {
         `
         loginWrap.classList.add('login-wrap')
         chatWrap.classList.add('hide')
+        chatCon.innerHTML = ''
         alert('成功登出!!')
     }
     //發送訊息

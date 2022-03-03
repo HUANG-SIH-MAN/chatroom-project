@@ -1,3 +1,4 @@
+//後端伺服器 (express + socket設定)
 const express = require("express"); 
 const { createServer } = require("http"); 
 const { Server } = require("socket.io"); 
@@ -12,6 +13,10 @@ const io = new Server(httpServer, {
     }
 }); 
 
+//資料庫設定
+const { Message } = require('./models')
+const moment = require('moment')
+
 let userName = []
 
 io.on("connection", (socket) => { 
@@ -22,12 +27,24 @@ io.on("connection", (socket) => {
         if (!isNewPerson) {
             //登入成功回應
             userName.push(loginUserName)
-            socket.emit('loginSuccess', loginUserName)
             const message = {
                 message: `歡迎${loginUserName}加入聊天室`,
                 userNumber: userName.length
             }
             io.sockets.emit('addUser', message)
+            Message.findAll({
+                raw: true, nest: true,
+                attributes: {
+                    exclude: ['updatedAt']
+                }
+            })
+            .then(data => {
+                const messageData = data.map(i =>({
+                    ...i,
+                    createdAt: moment(i.createdAt).fromNow()
+                }))
+                return socket.emit('loginSuccess', {loginUserName, messageData})
+            })
         } else {
             // 有重複登入，回傳失敗訊息
             socket.emit('loginFail', '暱稱已經有人使用過了')
@@ -46,7 +63,8 @@ io.on("connection", (socket) => {
 
     /*接收訊息*/
     socket.on('sendMessage', data => {
-        io.sockets.emit('receiveMessage', data)
+        Message.create(data)
+        .then(() => io.sockets.emit('receiveMessage', data)) 
     })
 }); 
 
