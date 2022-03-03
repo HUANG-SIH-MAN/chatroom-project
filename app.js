@@ -43,6 +43,11 @@ io.on("connection", (socket) => {
         }
         io.sockets.emit('leave', message)
     })
+
+    /*接收訊息*/
+    socket.on('sendMessage', data => {
+        io.sockets.emit('receiveMessage', data)
+    })
 }); 
 
 httpServer.listen(3000);
