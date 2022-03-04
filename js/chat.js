@@ -76,6 +76,10 @@ socket.on('receiveMessage', data => {
     }
 })
 
+socket.on("disconnect", (reason) => {
+    console.log(reason)
+})
+
 // DOM事件操作
 document.addEventListener('click', event => {
     const targe = event.target
