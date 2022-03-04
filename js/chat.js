@@ -18,7 +18,6 @@ socket.on('loginSuccess', data => {
     loginWrap.innerHTML = ``
     loginWrap.classList.remove('login-wrap')
     chatWrap.classList.remove('hide')
-    console.log(data)
     data.messageData.forEach(i => {
         if (user === i.user) {
             chatCon.innerHTML +=  `
@@ -63,7 +62,7 @@ socket.on('receiveMessage', data => {
     if (user === data.user) {
         chatCon.innerHTML +=  `
             <div class="chat-item item-right clearfix">
-                <span class="abs uname">me</span>
+                <span class="abs uname">${data.user}</span>
                 <span class="message fr">${data.message}</span>
             </div>
         `
